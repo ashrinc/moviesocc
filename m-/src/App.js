@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import FriendRequests from "./pages/FriendRequests";
@@ -9,17 +10,18 @@ import Signup from "./pages/Signup";
 import Wishlist from "./pages/Wishlist";
 
 function App() {
-  const isLoggedIn = !!localStorage.getItem("token");
+  // Use state to manage login status, initializing from localStorage
+  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+
+  // This function will be called by the Login component on success
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+  };
 
   return (
     <Router>
       <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <h1 style={{
-          color: "blue",
-          fontSize: "2.5rem",
-          fontWeight: "bold",
-          textShadow: "0 0 10px #00f, 0 0 20px #0ff"
-        }}>
+        <h1 style={{ color: "blue", fontSize: "2.5rem", fontWeight: "bold", textShadow: "0 0 10px #00f, 0 0 20px #0ff" }}>
           Movie Socials ✨
         </h1>
       </div>
@@ -27,7 +29,8 @@ function App() {
       <Routes>
         <Route path="/" element={!isLoggedIn ? <Home /> : <Navigate to="/dashboard" />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/login" element={<Login />} />
+        {/* Pass the handleLoginSuccess function as a prop to Login */}
+        <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
         <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
         <Route path="/movies" element={<Movies />} />
         <Route path="/wishlist" element={<Wishlist />} />
@@ -40,6 +43,7 @@ function App() {
 }
 
 function Home() {
+  // ... Home component remains the same
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <Link to="/login">
@@ -53,6 +57,7 @@ function Home() {
 }
 
 const buttonStyle = {
+  // ... buttonStyle remains the same
   padding: "10px 20px",
   fontSize: "1.2rem",
   cursor: "pointer",

@@ -24,43 +24,19 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    friends: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
-    ],
-    wishlist: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Movie",
-      },
-    ],
-    friendRequests: [
-      {
-        from: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        status: {
-          type: String,
-          enum: ["pending", "accepted", "rejected"],
-          default: "pending",
-        },
-      },
-    ],
+    // ... other fields are fine ...
   },
   { timestamps: true }
 );
 
-// Hash password before saving
+// Hash password before saving -- THIS IS CORRECT
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Compare passwords
+// Compare passwords -- THIS IS CORRECT
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
