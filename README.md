@@ -1,36 +1,46 @@
-Movie Socials
+🎬 Movie Socials
 
-Movie Socials is a MERN stack web application where users can browse movies, add them to their wishlist, rate movies, and connect with friends. Admins can manage movies and users. This project demonstrates a full-stack application with authentication, authorization, and social features.
+Movie Socials is a MERN stack web application where users can:
 
-Features
+🍿 Browse movies
+
+💖 Add movies to their wishlist
+
+⭐ Rate movies and view average ratings
+
+👥 Connect with friends
+
+Admins can manage movies and users. This project demonstrates a full-stack application with authentication, authorization, and social features.
+
+✨ Features
 User Features
 
-Sign up, login, and manage profile
+📝 Sign up, login, and manage profile
 
-Browse movies
+🍿 Browse movies
 
-Add movies to wishlist
+💖 Add movies to wishlist
 
-Rate movies and see average ratings
+⭐ Rate movies and view average ratings
 
-Search and send friend requests
+🔍 Search for users and send friend requests
 
-Accept/reject friend requests
+✅ Accept or reject friend requests
 
-View list of friends and their wishlists
+👥 View list of friends and their wishlists
 
 Admin Features
 
-Login as admin
+🔑 Login as admin
 
-Add, edit, and delete movies
+➕ Add, ✏️ Edit, and ❌ Delete movies
 
-Manage users
+👤 Manage users
 
-Technologies Used
+💻 Technologies Used
 
 Frontend: React, React Router, Axios
 
 Backend: Node.js, Express.js, MongoDB, Mongoose, JWT authentication
 
-Other: bcryptjs for password hashing, cors, dotenv
+Other: bcryptjs (password hashing), cors, dotenv
