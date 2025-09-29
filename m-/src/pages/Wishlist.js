@@ -1,37 +1,70 @@
-import { useEffect, useState } from "react";
+import axios from "axios";
+import { useCallback, useEffect, useState } from "react";
 
 export default function Wishlist() {
+  const token = sessionStorage.getItem("token");
   const [wishlist, setWishlist] = useState([]);
-  const token = localStorage.getItem("token");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchWishlist = async () => {
-      const res = await fetch("http://localhost:5000/api/wishlist", {
+  const fetchWishlist = useCallback(async () => {
+    if (!token) {
+      setError("Not authorized. Please log in.");
+      setLoading(false);
+      return;
+    }
+    try {
+      // This endpoint should return the user's profile, including the populated wishlist
+      const res = await axios.get("http://localhost:5000/api/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      setWishlist(data);
-    };
-    fetchWishlist();
+      // Ensure the wishlist data is an array before setting it
+      setWishlist(res.data.wishlist || []);
+    } catch (err) {
+      console.error("Error fetching wishlist:", err.response || err);
+      setError("Failed to fetch your wishlist.");
+    } finally {
+      setLoading(false);
+    }
   }, [token]);
 
+  useEffect(() => {
+    fetchWishlist();
+  }, [fetchWishlist]);
+
+  if (loading) return <p style={{ textAlign: "center" }}>Loading your wishlist...</p>;
+  if (error) return <p style={{ color: "red", textAlign: "center" }}>{error}</p>;
+
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={containerStyle}>
       <h2>My Wishlist</h2>
-      {wishlist.map((m) => (
-        <div key={m._id} style={card}>
-          <h3>{m.title}</h3>
-          <p>{m.description}</p>
-        </div>
-      ))}
+      {wishlist.length > 0 ? (
+        wishlist.map((movie) => (
+          <div key={movie._id} style={movieCardStyle}>
+            <h3>{movie.title}</h3>
+            <p><strong>Genre:</strong> {movie.genre}</p>
+            <p>{movie.description}</p>
+          </div>
+        ))
+      ) : (
+        <p>Your wishlist is empty. Add some movies!</p>
+      )}
     </div>
   );
 }
 
-const card = {
-  border: "1px solid #ccc",
-  borderRadius: "6px",
-  padding: "10px",
-  margin: "10px auto",
-  width: "60%",
+// Styling
+const containerStyle = {
+  maxWidth: "800px",
+  margin: "20px auto",
+  padding: "20px",
+};
+
+const movieCardStyle = {
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  padding: "20px",
+  marginBottom: "20px",
+  boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  backgroundColor: "#fff",
 };

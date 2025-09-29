@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState } from "react"; // FIX: Removed unused useEffect
 import { Link, Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Users from "./components/Users";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminLogin from "./pages/AdminLogin";
 import Dashboard from "./pages/Dashboard";
 import FriendRequests from "./pages/FriendRequests";
 import Friends from "./pages/Friends";
@@ -10,12 +13,18 @@ import Signup from "./pages/Signup";
 import Wishlist from "./pages/Wishlist";
 
 function App() {
-  // Use state to manage login status, initializing from localStorage
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
+  const [isLoggedIn, setIsLoggedIn] = useState(!!sessionStorage.getItem("token"));
+  const [userRole, setUserRole] = useState(sessionStorage.getItem("role") || null);
 
-  // This function will be called by the Login component on success
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (role = "user") => {
     setIsLoggedIn(true);
+    setUserRole(role);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserRole(null);
+    // The Dashboard component handles clearing sessionStorage
   };
 
   return (
@@ -27,23 +36,40 @@ function App() {
       </div>
 
       <Routes>
-        <Route path="/" element={!isLoggedIn ? <Home /> : <Navigate to="/dashboard" />} />
+        {/* Public */}
+        <Route path="/" element={!isLoggedIn ? <Home /> : <Navigate to={userRole === 'admin' ? '/admin/dashboard' : '/dashboard'} />} />
         <Route path="/signup" element={<Signup />} />
-        {/* Pass the handleLoginSuccess function as a prop to Login */}
         <Route path="/login" element={<Login onLoginSuccess={handleLoginSuccess} />} />
-        <Route path="/dashboard" element={isLoggedIn ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/movies" element={<Movies />} />
-        <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/friends" element={<Friends />} />
-        <Route path="/friend-requests" element={<FriendRequests />} />
-        <Route path="/profile" element={<Profile />} />
+
+        {/* User */}
+        <Route path="/dashboard" element={isLoggedIn && userRole === "user" ? <Dashboard handleLogout={handleLogout} /> : <Navigate to="/login" />} />
+        <Route path="/movies" element={isLoggedIn ? <Movies /> : <Navigate to="/login" />} />
+        <Route path="/wishlist" element={isLoggedIn ? <Wishlist /> : <Navigate to="/login" />} />
+        <Route path="/friends" element={isLoggedIn ? <Friends /> : <Navigate to="/login" />} />
+        <Route path="/friend-requests" element={isLoggedIn ? <FriendRequests /> : <Navigate to="/login" />} />
+        <Route path="/profile" element={isLoggedIn ? <Profile /> : <Navigate to="/login" />} />
+        <Route path="/users" element={isLoggedIn && userRole === "user" ? <Users token={sessionStorage.getItem("token")} /> : <Navigate to="/login" />} />
+
+        {/* Admin */}
+        <Route path="/admin/login" element={<AdminLogin onLoginSuccess={handleLoginSuccess} />} />
+        <Route path="/admin/dashboard" element={isLoggedIn && userRole === "admin" ? <AdminDashboard handleLogout={handleLogout} /> : <Navigate to="/admin/login" />} />
       </Routes>
     </Router>
   );
 }
 
 function Home() {
-  // ... Home component remains the same
+  const buttonStyle = {
+    padding: "10px 20px",
+    fontSize: "1.2rem",
+    cursor: "pointer",
+    border: "none",
+    borderRadius: "8px",
+    backgroundColor: "#007BFF",
+    color: "white",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+  };
+
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
       <Link to="/login">
@@ -52,20 +78,12 @@ function Home() {
       <Link to="/signup">
         <button style={{ ...buttonStyle, marginLeft: "20px" }}>Signup</button>
       </Link>
+      <Link to="/admin/login">
+        <button style={{ ...buttonStyle, marginLeft: "20px", backgroundColor: "darkred" }}>Admin</button>
+      </Link>
     </div>
   );
 }
 
-const buttonStyle = {
-  // ... buttonStyle remains the same
-  padding: "10px 20px",
-  fontSize: "1.2rem",
-  cursor: "pointer",
-  border: "none",
-  borderRadius: "8px",
-  backgroundColor: "#007BFF",
-  color: "white",
-  boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
-};
-
 export default App;
+

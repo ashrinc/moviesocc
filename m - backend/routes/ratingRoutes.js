@@ -1,61 +1,67 @@
 import express from "express";
 import mongoose from "mongoose";
 import { protect } from "../middleware/authMiddleware.js";
+import Movie from "../models/Movie.js"; // Ensure you have a Movie model
 import Rating from "../models/Rating.js";
 
 const router = express.Router();
 
-// @desc   Add or update rating
+// HELPER: Function to update a movie's average rating
+const updateMovieAverageRating = async (movieId) => {
+  const stats = await Rating.aggregate([
+    { $match: { movie: new mongoose.Types.ObjectId(movieId) } },
+    { $group: { _id: "$movie", avgRating: { $avg: "$rating" } } },
+  ]);
+
+  if (stats.length > 0) {
+    // If ratings exist, update the movie with the new average
+    await Movie.findByIdAndUpdate(movieId, { avgRating: stats[0].avgRating });
+  } else {
+    // If all ratings are gone, reset the average to 0
+    await Movie.findByIdAndUpdate(movieId, { avgRating: 0 });
+  }
+};
+
+// @desc   Add or update a rating for a movie
 router.post("/:movieId/rate", protect, async (req, res) => {
   try {
     const { rating, review } = req.body;
-    const movieId = req.params.movieId;
+    const { movieId } = req.params;
 
     if (!rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ message: "Rating must be 1-5" });
+      return res.status(400).json({ message: "Rating must be between 1 and 5" });
     }
 
-    // Check if user already rated this movie
-    let existing = await Rating.findOne({ movie: movieId, user: req.user._id });
-
-    if (existing) {
-      existing.rating = rating;
-      existing.review = review || existing.review;
-      await existing.save();
-      return res.json({ message: "Rating updated", rating: existing });
+    const movie = await Movie.findById(movieId);
+    if (!movie) {
+      return res.status(404).json({ message: "Movie not found" });
     }
 
-    const newRating = await Rating.create({
-      movie: movieId,
-      user: req.user._id,
-      rating,
-      review,
-    });
+    // Find existing rating or create a new one
+    const existingRating = await Rating.findOne({ movie: movieId, user: req.user._id });
 
-    res.status(201).json({ message: "Rating added", rating: newRating });
+    if (existingRating) {
+      existingRating.rating = rating;
+      existingRating.review = review || "";
+      await existingRating.save();
+    } else {
+      await Rating.create({
+        movie: movieId,
+        user: req.user._id,
+        rating,
+        review,
+      });
+    }
+
+    // CRITICAL FIX: After rating, update the movie's average score
+    await updateMovieAverageRating(movieId);
+
+    res.status(201).json({ message: "Rating submitted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// @desc   Get average rating for a movie
-router.get("/:movieId/average", protect, async (req, res) => {
-  try {
-    const movieId = req.params.movieId;
-
-    const result = await Rating.aggregate([
-      { $match: { movie: new mongoose.Types.ObjectId(movieId) } },
-      { $group: { _id: "$movie", averageRating: { $avg: "$rating" }, count: { $sum: 1 } } },
-    ]);
-
-    if (result.length === 0) {
-      return res.json({ averageRating: 0, count: 0 });
-    }
-
-    res.json(result[0]);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Error submitting rating:", error);
+    res.status(500).json({ message: "Server error while submitting rating." });
   }
 });
 
 export default router;
+

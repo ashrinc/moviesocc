@@ -1,20 +1,20 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-export default function Login({ onLoginSuccess }) {
+export default function AdminLogin({ onLoginSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
+  const handleAdminLogin = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      const res = await fetch("http://localhost:5000/api/auth/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -23,7 +23,7 @@ export default function Login({ onLoginSuccess }) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Login failed");
+        setError(data.message || "Admin login failed");
         return;
       }
 
@@ -35,12 +35,8 @@ export default function Login({ onLoginSuccess }) {
       // Update App.js state
       onLoginSuccess(data.role);
 
-      setSuccess("Login successful! Redirecting...");
-
-      // Redirect to the user dashboard
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+      setSuccess("Admin login successful! Redirecting...");
+      setTimeout(() => navigate("/admin/dashboard"), 1500);
 
     } catch (err) {
       setError("Something went wrong. Please try again.");
@@ -48,30 +44,18 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px", backgroundColor: "#000", color: "#fff", minHeight: "100vh", paddingTop: "50px" }}>
-      <h2>Login</h2>
-      <form onSubmit={handleLogin} style={{ display: "inline-block", textAlign: "left" }}>
+    <div style={{ textAlign: "center", marginTop: "50px", backgroundColor: "#111", color: "#fff", minHeight: "100vh", paddingTop: "50px" }}>
+      <h2>Admin Login</h2>
+      <form onSubmit={handleAdminLogin} style={{ display: "inline-block", textAlign: "left" }}>
         <div style={{ marginBottom: "10px" }}>
           <label>Email:</label><br />
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ padding: "8px", width: "250px" }}
-          />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required style={{ padding: "8px", width: "250px" }} />
         </div>
         <div style={{ marginBottom: "10px" }}>
           <label>Password:</label><br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ padding: "8px", width: "250px" }}
-          />
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required style={{ padding: "8px", width: "250px" }} />
         </div>
-        <button type="submit" style={buttonStyle}>Login</button>
+        <button type="submit" style={buttonStyle}>Login as Admin</button>
       </form>
 
       <div style={{ marginTop: "20px" }}>
@@ -92,7 +76,7 @@ const buttonStyle = {
   cursor: "pointer",
   border: "none",
   borderRadius: "8px",
-  backgroundColor: "#007BFF",
+  backgroundColor: "#dc3545",
   color: "white",
   marginTop: "10px"
 };

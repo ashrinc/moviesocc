@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 export default function Profile() {
@@ -6,11 +7,14 @@ export default function Profile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      const res = await fetch("http://localhost:5000/api/users/profile", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setUser(data);
+      try {
+        const res = await axios.get("http://localhost:5000/api/users/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUser(res.data);
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchProfile();
   }, [token]);
@@ -20,9 +24,23 @@ export default function Profile() {
   return (
     <div style={{ textAlign: "center" }}>
       <h2>Profile</h2>
-      <p><b>Username:</b> {user.username}</p>
+      <p><b>Username:</b> {user.name}</p>
       <p><b>Email:</b> {user.email}</p>
       <p><b>Role:</b> {user.role}</p>
+
+      <h3>Friends</h3>
+      <ul>
+        {user.friends?.length
+          ? user.friends.map(f => <li key={f._id}>{f.name}</li>)
+          : <p>No friends yet</p>}
+      </ul>
+
+      <h3>Wishlist</h3>
+      <ul>
+        {user.wishlist?.length
+          ? user.wishlist.map(m => <li key={m._id}>{m.title} (Rating: {m.rating || "N/A"})</li>)
+          : <p>Wishlist empty</p>}
+      </ul>
     </div>
   );
 }

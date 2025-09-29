@@ -24,19 +24,38 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
-    // ... other fields are fine ...
+    // FIX: Added missing fields for wishlist, friends, and friend requests
+    wishlist: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Movie", // Make sure you have a "Movie" model
+    }],
+    friends: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    }],
+    friendRequests: [{
+      from: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+      status: {
+        type: String,
+        enum: ["pending", "accepted", "rejected"],
+        default: "pending",
+      },
+    }],
   },
   { timestamps: true }
 );
 
-// Hash password before saving -- THIS IS CORRECT
+// Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-// Compare passwords -- THIS IS CORRECT
+// Compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
