@@ -1,6 +1,6 @@
 🎬 Movie Socials
 
-Movie Socials is a MERN stack web application where users can:
+Movie Socials is a MERN stack web application deployed on render and vercel  where users can:
 
 🍿 Browse movies
 
@@ -36,6 +36,8 @@ Admin Features
 ➕ Add, ✏️ Edit, and ❌ Delete movies
 
 👤 Manage users
+
+here is the link :- https://moviesocc.vercel.app/
 
 💻 Technologies Used
 
