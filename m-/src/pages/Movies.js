@@ -14,7 +14,7 @@ export default function Movies() {
 
   const fetchMovies = useCallback(async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/movies", {
+      const res = await axios.get("https://moviesocc.onrender.com/api/movies", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMovies(res.data || []);
@@ -32,7 +32,7 @@ export default function Movies() {
 
   const addToWishlist = async (movieId) => {
     try {
-      await axios.post(`http://localhost:5000/api/wishlist/${movieId}`, {}, {
+      await axios.post(`https://moviesocc.onrender.com/api/wishlist/${movieId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Added to wishlist!");
@@ -51,7 +51,7 @@ export default function Movies() {
     try {
       // ✅ CORRECTED URL: The movie ID comes before "/rate"
       await axios.post(
-        `http://localhost:5000/api/ratings/${ratingMovie._id}/rate`,
+        `https://moviesocc.onrender.com/api/ratings/${ratingMovie._id}/rate`,
         { rating: currentRating, review: review },
         { headers: { Authorization: `Bearer ${token}` } }
       );

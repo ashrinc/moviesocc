@@ -17,7 +17,7 @@ export default function Users() {
       return;
     }
     try {
-      const res = await axios.get("http://localhost:5000/api/users", {
+      const res = await axios.get("https://moviesocc.onrender.com/api/users", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
@@ -36,7 +36,7 @@ export default function Users() {
   const sendRequest = async (id) => {
     try {
       // NOTE: This route is different from your friends route. Ensure it's correct.
-      await axios.post(`http://localhost:5000/api/friends/send-request/${id}`, {}, {
+      await axios.post(`https://moviesocc.onrender.com/api/friends/send-request/${id}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("Friend request sent!");

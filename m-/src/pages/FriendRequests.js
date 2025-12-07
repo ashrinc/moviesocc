@@ -12,7 +12,7 @@ export default function FriendRequests() {
   const fetchRequests = useCallback(async () => {
     try {
       // The correct endpoint to get pending requests
-      const res = await axios.get("http://localhost:5000/api/friends/requests", {
+      const res = await axios.get("https://moviesocc.onrender.com/api/friends/requests", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data || []);
@@ -34,7 +34,7 @@ export default function FriendRequests() {
   const handleRequest = async (fromId, action) => {
     try {
       // Dynamically use the correct endpoint for accept or reject
-      await axios.put(`http://localhost:5000/api/friends/${action}-request/${fromId}`, {}, {
+      await axios.put(`https://moviesocc.onrender.com/api/friends/${action}-request/${fromId}`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Refresh the list after an action is taken

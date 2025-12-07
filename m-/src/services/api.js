@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:5000/api", // your backend base URL
+  baseURL: "https://moviesocc.onrender.com/api", // your backend base URL
 });
 
 // Add token to requests automatically

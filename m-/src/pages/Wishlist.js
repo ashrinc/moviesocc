@@ -15,7 +15,7 @@ export default function Wishlist() {
     }
     try {
       // This endpoint should return the user's profile, including the populated wishlist
-      const res = await axios.get("http://localhost:5000/api/users/profile", {
+      const res = await axios.get("https://moviesocc.onrender.com/api/users/profile", {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Ensure the wishlist data is an array before setting it

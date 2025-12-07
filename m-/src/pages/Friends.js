@@ -17,7 +17,7 @@ export default function Friends() {
       return;
     }
     try {
-      const res = await axios.get("http://localhost:5000/api/friends", {
+      const res = await axios.get("https://moviesocc.onrender.com/api/friends", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFriends(res.data || []);
@@ -37,7 +37,7 @@ export default function Friends() {
   const viewWishlist = async (friendId) => {
     try {
       // This is the new backend endpoint we will need to create
-      const res = await axios.get(`http://localhost:5000/api/friends/${friendId}/wishlist`, {
+      const res = await axios.get(`https://moviesocc.onrender.com/api/friends/${friendId}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setSelectedFriend(friends.find(f => f._id === friendId));
