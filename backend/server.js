@@ -13,14 +13,29 @@ const app = express();
 // Middleware
 app.use(express.json());
 
-// ✅ Correct CORS Setup (for React frontend on Vercel)
+
+
+const allowedOrigins = [
+  "https://moviesocc.vercel.app",
+  "http://localhost:3000"
+];
+
 app.use(
   cors({
-    origin: ["https://moviesocc.vercel.app"], // your deployed frontend URL
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: "GET,POST,PUT,DELETE,PATCH",
     credentials: true,
   })
 );
+
+app.options("*", cors()); // enable preflight requests
+
 
 // MongoDB connection
 const connectDB = async () => {
